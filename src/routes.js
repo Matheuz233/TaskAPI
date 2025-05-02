@@ -32,6 +32,12 @@ export const routes = [
     handler: (req, res) => {
       const { title, description, completed } = req.body
 
+      if (!title || !description || completed === undefined) {
+        return res
+          .writeHead(400)
+          .end("Título, descrição e status são obrigatórios")
+      }
+
       const task = {
         id: randomUUID(),
         title,
@@ -44,7 +50,13 @@ export const routes = [
 
       database.insert("tasks", task)
 
-      return res.writeHead(201).end()
+      res.writeHead(201, { "Content-Type": "application/json" })
+      res.end(
+        JSON.stringify({
+          message: "Tarefa criada com sucesso",
+          task,
+        })
+      )
     },
   },
   {
@@ -55,8 +67,6 @@ export const routes = [
       const { title, description, completed } = req.body
 
       const task = database.select("tasks").find((task) => task.id === id)
-
-      console.log("task", task)
 
       if (!task) {
         return res.writeHead(404).end()
@@ -79,7 +89,13 @@ export const routes = [
 
       database.update("tasks", id, task)
 
-      return res.writeHead(200).end(JSON.stringify(task))
+      res.writeHead(200, { "Content-Type": "application/json" })
+      res.end(
+        JSON.stringify({
+          message: "Tarefa atualizada com sucesso",
+          task,
+        })
+      )
     },
   },
   {
@@ -88,9 +104,21 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params
 
+      const task = database.select("tasks").find((task) => task.id === id)
+
+      if (!task) {
+        return res.writeHead(404).end("Tarefa não encontrada")
+      }
+
       database.delete("tasks", id)
 
-      return res.writeHead(204).end()
+      res.writeHead(200, { "Content-Type": "application/json" })
+      res.end(
+        JSON.stringify({
+          message: "Tarefa deletada com sucesso",
+          task,
+        })
+      )
     },
   },
 ]

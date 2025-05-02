@@ -9,5 +9,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "csv-generate": "^4.4.2",
+    "csv-parse": "^5.6.0"
+  }
 }
